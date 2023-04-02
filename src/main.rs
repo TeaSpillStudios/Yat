@@ -2,10 +2,11 @@ use std::panic;
 use std::time::Duration;
 
 use colored::*;
+use log::warn;
 use tokio::{task, time};
 use youtube_chat::{item::ChatItem, live_chat::LiveChatClientBuilder};
 
-const URL: &str = "https://.youtube.com/watch?v=jfKfPfyJRdk";
+const URL: &str = "https://www.youtube.com/watch?v=jfKfPfyJRdk";
 
 #[tokio::main]
 async fn main() {
@@ -42,5 +43,12 @@ async fn main() {
 }
 
 fn handle_message(item: ChatItem) {
-    println!("{:?}", item.message);
+    for message in item.message.iter() {
+        match message {
+            youtube_chat::item::MessageItem::Text(v) => {
+                println!("{:>20} - {v}", item.author.name.clone().unwrap().green())
+            }
+            youtube_chat::item::MessageItem::Emoji(_) => warn!("Emojis are not supported yet."),
+        }
+    }
 }
