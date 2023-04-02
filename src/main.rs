@@ -10,6 +10,8 @@ const URL: &str = "https://www.youtube.com/watch?v=jfKfPfyJRdk";
 
 #[tokio::main]
 async fn main() {
+    pretty_env_logger::init();
+
     panic::set_hook(Box::new(|e| {
         if e.to_string().contains("dns error") {
             eprintln!(
@@ -46,7 +48,15 @@ fn handle_message(item: ChatItem) {
     for message in item.message.iter() {
         match message {
             youtube_chat::item::MessageItem::Text(v) => {
-                println!("{:>20} - {v}", item.author.name.clone().unwrap().green())
+                println!(
+                    "{:>10}{:>24} - {v}",
+                    item.timestamp
+                        .unwrap()
+                        .time()
+                        .format("%H:%M:%S")
+                        .to_string(),
+                    item.author.name.clone().unwrap().green()
+                )
             }
             youtube_chat::item::MessageItem::Emoji(_) => warn!("Emojis are not supported yet."),
         }
