@@ -1,21 +1,29 @@
 use std::panic;
 use std::time::Duration;
 
+use colored::*;
 use tokio::{task, time};
 use youtube_chat::{item::ChatItem, live_chat::LiveChatClientBuilder};
+
+const URL: &str = "https://.youtube.com/watch?v=jfKfPfyJRdk";
 
 #[tokio::main]
 async fn main() {
     panic::set_hook(Box::new(|e| {
         if e.to_string().contains("dns error") {
-            eprintln!("There was a DNS error, did you set the correct URL?");
+            eprintln!(
+                "{}\n\n{}{}",
+                "There was a DNS error, did you set the correct URL?".red(),
+                "Current URL: ".red(),
+                URL.red()
+            );
         } else {
-            eprintln!("{e}");
+            eprintln!("{}", e.to_string().red());
         }
     }));
 
     let mut client = LiveChatClientBuilder::new()
-        .url("https://www.youtube.com/watch?v=jfKfPfyJRdk".to_string())
+        .url(URL.to_string())
         .unwrap()
         .on_chat(|chat_item| handle_message(chat_item))
         .on_error(|error| println!("{error}"))
