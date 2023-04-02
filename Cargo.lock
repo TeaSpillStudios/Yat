@@ -1367,6 +1367,7 @@ name = "yat"
 version = "0.1.0"
 dependencies = [
  "colored",
+ "log",
  "tokio",
  "youtube_chat",
 ]
