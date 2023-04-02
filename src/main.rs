@@ -1,3 +1,4 @@
+use std::panic;
 use std::time::Duration;
 
 use tokio::{task, time};
@@ -5,6 +6,14 @@ use youtube_chat::{item::ChatItem, live_chat::LiveChatClientBuilder};
 
 #[tokio::main]
 async fn main() {
+    panic::set_hook(Box::new(|e| {
+        if e.to_string().contains("dns error") {
+            eprintln!("There was a DNS error, did you set the correct URL?");
+        } else {
+            eprintln!("{e}");
+        }
+    }));
+
     let mut client = LiveChatClientBuilder::new()
         .url("https://www.youtube.com/watch?v=jfKfPfyJRdk".to_string())
         .unwrap()
